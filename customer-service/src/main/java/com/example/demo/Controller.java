@@ -2,10 +2,7 @@ package com.example.demo;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,8 +19,6 @@ public class Controller {
   @GetMapping(path = "customers/{id}")
   public ResponseEntity<Customer> getCustomer(@PathVariable("id") long customerId) {
     logger.info("GETTING CUSTOMER WITH ID {}", customerId);
-    Span span = Span.current();
-    span.setAttribute("customer.id", customerId);
 
     if (customerId < 0 || customerId > NAMES.size() - 1) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -38,8 +33,6 @@ public class Controller {
   @GetMapping(path = "addresses/{id}")
   public ResponseEntity<Address> getAddress(@PathVariable("id") long customerId) throws InterruptedException {
     logger.info("GETTING ADDRESS FOR CUSTOMER WITH ID {}", customerId);
-    Span span = Span.current();
-    span.setAttribute("customer.id", customerId);
 
     if (customerId < 0 || customerId > NAMES.size() - 1) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);

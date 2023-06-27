@@ -1,14 +1,15 @@
 package com.example.demo;
 
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
 
 @Component
 public class AddressClient {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerClient.class);
 
     private final RestTemplate restTemplate;
     private final String baseUrl;
@@ -20,12 +21,8 @@ public class AddressClient {
         this.baseUrl = baseUrl;
     }
 
-    @WithSpan(value = "AddressClient.getAddressForCustomerId")
     Address getAddressForCustomerId(long id) {
-
-        Span span = Span.current();
-        span.setAttribute("customer.id", id);
-
+        logger.info("invoking address client api addresses/{}", id);
         return restTemplate.getForObject(String.format("%s/addresses/%d", baseUrl, id), Address.class);
     }
 

@@ -1,18 +1,22 @@
 package com.example.demo;
 
-import io.opentelemetry.api.trace.SpanKind;
+import com.example.demo.otel.OtelConfiguration;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.logs.LoggerProvider;
+import io.opentelemetry.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Value;
-import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 public class Controller {
@@ -23,12 +27,12 @@ public class Controller {
 
   private Logger logger = LoggerFactory.getLogger(Controller.class);
 
-  @Value("otel.traces.api.version")
-  private String tracesApiVersion;
+  private List<Integer> customerIdList = Arrays.asList(1, 4);
 
-  private final Tracer tracer = GlobalOpenTelemetry
-          .getTracer("com.example.demo.Controller",
-                  tracesApiVersion);
+  private OpenTelemetry openTelemetry = OtelConfiguration.initializeOpenTelemetry();
+
+  private Tracer tracer = openTelemetry.getTracer("api-service", "1.0");
+  private LoggerProvider loggerProvider = openTelemetry.getLogsBridge();
 
   @Autowired
   public Controller(CustomerClient customerClient, AddressClient addressClient) {
@@ -36,16 +40,32 @@ public class Controller {
     this.addressClient = addressClient;
   }
 
-  @WithSpan(value = "Controller.getCustomerWithAddress")
   @GetMapping(path = "customers/{id}")
   public CustomerAndAddress getCustomerWithAddress(@PathVariable("id") long customerId){
 
-    Span span = Span.current();
-    span.setAttribute("customer.id", customerId);
+    logger.info("customers/{} API invoked..", customerId);
+    boolean traceEnabled = false;
 
-    Customer customer = customerClient.getCustomer(customerId);
-    Address address = addressClient.getAddressForCustomerId(customerId);
-    return new CustomerAndAddress(customer, address);
+    for (Integer id : customerIdList) {
+      if (id == customerId)
+        traceEnabled = true;
+    }
+
+    if(traceEnabled)
+    {
+      Span span = tracer.spanBuilder("getCustomerWithAddress").startSpan();
+      span.setAttribute("customer.id", customerId);
+      try (Scope scope = span.makeCurrent()){
+        Customer customer = customerClient.getCustomer(customerId);
+        Address address = addressClient.getAddressForCustomerId(customerId);
+        return new CustomerAndAddress(customer, address);
+      } finally {
+        span.end();
+      }
+    } else {
+      Customer customer = customerClient.getCustomer(customerId);
+      Address address = addressClient.getAddressForCustomerId(customerId);
+      return new CustomerAndAddress(customer, address);
+    }
   }
-
 }
