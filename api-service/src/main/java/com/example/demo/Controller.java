@@ -4,6 +4,7 @@ import com.example.demo.otel.OtelConfiguration;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.logs.LoggerProvider;
 import io.opentelemetry.context.Context;
+import io.opentelemetry.context.ContextKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,6 @@ public class Controller {
   private OpenTelemetry openTelemetry = OtelConfiguration.initializeOpenTelemetry();
 
   private Tracer tracer = openTelemetry.getTracer("api-service", "1.0");
-  private LoggerProvider loggerProvider = openTelemetry.getLogsBridge();
 
   @Autowired
   public Controller(CustomerClient customerClient, AddressClient addressClient) {
@@ -56,8 +56,8 @@ public class Controller {
       Span span = tracer.spanBuilder("getCustomerWithAddress").startSpan();
       span.setAttribute("customer.id", customerId);
       try (Scope scope = span.makeCurrent()){
-        Customer customer = customerClient.getCustomer(customerId);
-        Address address = addressClient.getAddressForCustomerId(customerId);
+        Customer customer = customerClient.getCustomer(customerId, openTelemetry, Context.current());
+        Address address = addressClient.getAddressForCustomerId(customerId, openTelemetry, Context.current());
         return new CustomerAndAddress(customer, address);
       } finally {
         span.end();
