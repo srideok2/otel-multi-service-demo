@@ -2,9 +2,7 @@ package com.example.demo;
 
 import com.example.demo.otel.OtelConfiguration;
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.logs.LoggerProvider;
 import io.opentelemetry.context.Context;
-import io.opentelemetry.context.ContextKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
