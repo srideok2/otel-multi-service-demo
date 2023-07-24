@@ -12,9 +12,6 @@ export OTEL_RESOURCE_ATTRIBUTES=service.name=customer-service,service.version=1.
 export OTEL_TRACES_SAMPLER="parentbased_always_off"
 #export OTEL_TRACES_SAMPLER="parentbased_traceidratio"
 #export OTEL_TRACES_SAMPLER_ARG="0.5"
-export OTEL_PROPAGATORS="tracecontext"
-# tracecontext: W3C Trace Context
-# baggage: W3C Baggage
 
 java -javaagent:./${AGENT_FILE} -jar target/customer-service-1.0.0-SNAPSHOT.jar
 #java -Dotel.javaagent.enabled=true -Dotel.javaagent.jarPath=./${AGENT_FILE} -Dotel.javaagent.configuration=./otel-config.yaml -jar target/customer-service-1.0.0-SNAPSHOT.jar
