@@ -30,7 +30,7 @@ public final class OtelConfiguration {
 
         // Create and configure the OpenTelemetry SDK
         OtlpGrpcSpanExporter otlpGrpcSpanExporter = OtlpGrpcSpanExporter.builder()
-                .setEndpoint("http://0.0.0.0:5555")
+                .setEndpoint("http://opentelemetry-collector:5555")
                 .build();
 
         // Include required service.name resource attribute on all spans and metrics

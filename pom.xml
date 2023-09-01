@@ -16,7 +16,7 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>11</maven.compiler.release>
         <otel.traces.api.version>0.13.1</otel.traces.api.version>
     </properties>
 
