@@ -1,9 +1,4 @@
 config:
-  receivers:
-    otlp:
-      protocols:
-        grpc:
-          endpoint: 0.0.0.0:5555
   exporters:
     logging:
       loglevel: debug
@@ -14,8 +9,8 @@ config:
   service:
     pipelines:
       metrics:
-        receivers: [ otlp ]
-        exporters: [ logging ]
+        receivers: [otlp]
+        exporters: [logging]
       traces:
-        receivers: [ otlp ]
-        exporters: [ logging, otlp ]
+        receivers: [otlp]
+        exporters: [logging, otlp]
