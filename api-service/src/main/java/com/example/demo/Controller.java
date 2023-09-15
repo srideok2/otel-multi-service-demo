@@ -2,7 +2,9 @@ package com.example.demo;
 
 import com.example.demo.otel.OtelConfiguration;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Context;
+import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,8 @@ public class Controller {
     {
       Span span = tracer.spanBuilder("getCustomerWithAddress").startSpan();
       span.setAttribute("customer.id", customerId);
+      span.setAttribute(SemanticAttributes.HTTP_METHOD, "GET");
+
       try (Scope scope = span.makeCurrent()){
         Customer customer = customerClient.getCustomer(customerId, openTelemetry, Context.current());
         Address address = addressClient.getAddressForCustomerId(customerId, openTelemetry, Context.current());

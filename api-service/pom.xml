@@ -102,6 +102,13 @@
             <artifactId>opentelemetry-extension-trace-propagators</artifactId>
             <version>1.27.0</version>
         </dependency>
+        <!-- OpenTelemetry Instrumentation for HTTP -->
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-instrumentation-api</artifactId>
+            <version>1.27.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
